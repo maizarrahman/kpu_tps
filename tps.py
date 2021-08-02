@@ -45,255 +45,260 @@ while True:
         i += 1
     except NoSuchElementException:
         break
-try:
-    pass_propinsi = False
-    pass_kota = False
-    pass_camat = False
-    pass_desa = False
-    pass_tps = False
-    with open('tps.json') as f1:
-        akhir = json.load(f1)
-    for nama_propinsi in daftar_propinsi:
-        if not akhir.get('propinsi'):
-            akhir['propinsi'] = nama_propinsi
-            pass_propinsi = True
-        # skip propinsi yang sudah dicatat
-        if pass_propinsi or nama_propinsi == akhir['propinsi']:
-            pass_propinsi = True
-        else:
-            continue
-        # create csv
-        nama_file = nama_propinsi + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + '.csv'
-        f = open(nama_file, 'w')
-        writer = csv.writer(f)
-        row = ['PROPINSI', 'KOTA', 'CAMAT', 'DESA', 'TPS', 'DPT', 'PENGGUNA', 'PKB', 'Gerindra','PDIP','Golkar','NasDem','Garuda','Berkarya','PKS','Perindo','PPP','PSI','PAN','Hanura','Demokrat','PA','SIRA','PD Aceh','PNA','PBB','PKPI', 'SAH', 'TAK SAH', 'JUMLAH']
-        writer.writerow(row)
-
-        propinsi.send_keys(nama_propinsi + "\n")
-        # Kota
-        kota = WebDriverWait(driver, 10).until(
-                expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
-                )
-        try:
-            kota.click()
-        except ElementClickInterceptedException:
-            kota = WebDriverWait(driver, 10).until(
-                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
-                    )
-            kota.click()
-        sleep(1)
-        i = 1
-        daftar_kota = []
-        while True:
-            tag = '//div[@class="form-group col-md-3"][5]/div/ul/li[' + str(i) + ']'
-            try:
-                pilihan = driver.find_element_by_xpath(tag)
-                daftar_kota.append(pilihan.text)
-                i += 1
-            except NoSuchElementException:
-                break
-        for nama_kota in daftar_kota:
-            if not akhir.get('kota'):
-                akhir['kota'] = nama_kota
-                pass_kota = True
-            # skip kota yang sudah dicatat
-            if pass_kota or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota']):
-                pass_kota = True
+while True:
+    try:
+        pass_propinsi = False
+        pass_kota = False
+        pass_camat = False
+        pass_desa = False
+        pass_tps = False
+        with open('tps.json') as f1:
+            akhir = json.load(f1)
+        for nama_propinsi in daftar_propinsi:
+            if not akhir.get('propinsi'):
+                akhir['propinsi'] = nama_propinsi
+                pass_propinsi = True
+            # skip propinsi yang sudah dicatat
+            if pass_propinsi or nama_propinsi == akhir['propinsi']:
+                pass_propinsi = True
             else:
                 continue
-            kota.send_keys(nama_kota + "\n")
-            # Kecamatan
-            camat = WebDriverWait(driver, 10).until(
-                    expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][6]/div/div/div/input'))
+            # create csv
+            nama_file = nama_propinsi.replace(' ', '_') + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + '.csv'
+            f = open(nama_file, 'w')
+            writer = csv.writer(f)
+            row = ['PROPINSI', 'KOTA', 'CAMAT', 'DESA', 'TPS', 'DPT', 'PENGGUNA', 'PKB', 'Gerindra','PDIP','Golkar','NasDem','Garuda','Berkarya','PKS','Perindo','PPP','PSI','PAN','Hanura','Demokrat','PA','SIRA','PD Aceh','PNA','PBB','PKPI', 'SAH', 'TAK SAH', 'JUMLAH']
+            writer.writerow(row)
+
+            propinsi.send_keys(nama_propinsi + "\n")
+            # Kota
+            kota = WebDriverWait(driver, 10).until(
+                    expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
                     )
-            camat.click()
+            try:
+                kota.click()
+            except ElementClickInterceptedException:
+                kota = WebDriverWait(driver, 10).until(
+                        expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
+                        )
+                kota.click()
             sleep(1)
             i = 1
-            daftar_camat = []
+            daftar_kota = []
             while True:
-                tag = '//div[@class="form-group col-md-3"][6]/div/ul/li[' + str(i) + ']'
+                tag = '//div[@class="form-group col-md-3"][5]/div/ul/li[' + str(i) + ']'
                 try:
                     pilihan = driver.find_element_by_xpath(tag)
-                    daftar_camat.append(pilihan.text)
+                    daftar_kota.append(pilihan.text)
                     i += 1
                 except NoSuchElementException:
                     break
-            for nama_camat in daftar_camat:
-                if not akhir.get('camat'):
-                    akhir['camat'] = nama_camat
-                    pass_camat = True
-                # skip camat yang sudah dicatat
-                if pass_camat or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and nama_camat == akhir['camat']):
-                    pass_camat = True
+            for nama_kota in daftar_kota:
+                if not akhir.get('kota'):
+                    akhir['kota'] = nama_kota
+                    pass_kota = True
+                # skip kota yang sudah dicatat
+                if pass_kota or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota']):
+                    pass_kota = True
                 else:
                     continue
-                camat.send_keys(nama_camat + "\n")
-                # Desa
-                desa = WebDriverWait(driver, 10).until(
-                        expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
+                kota.send_keys(nama_kota + "\n")
+                # Kecamatan
+                camat = WebDriverWait(driver, 10).until(
+                        expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][6]/div/div/div/input'))
                         )
-                try:
-                    desa.click()
-                except:
-                    desa = WebDriverWait(driver, 20).until(
-                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
-                            )
-                    desa.click()
+                camat.click()
                 sleep(1)
                 i = 1
-                daftar_desa = []
+                daftar_camat = []
                 while True:
-                    tag = '//div[@class="form-group col-md-3"][7]/div/ul/li[' + str(i) + ']'
+                    tag = '//div[@class="form-group col-md-3"][6]/div/ul/li[' + str(i) + ']'
                     try:
                         pilihan = driver.find_element_by_xpath(tag)
-                        daftar_desa.append(pilihan.text)
+                        daftar_camat.append(pilihan.text)
                         i += 1
                     except NoSuchElementException:
                         break
-                for nama_desa in daftar_desa:
-                    if not akhir.get('desa'):
-                        akhir['desa'] = nama_desa
-                        pass_desa = True
-                    # skip desa yang sudah dicatat
-                    if pass_desa or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and\
-                                     nama_camat == akhir['camat'] and nama_desa == akhir['desa']):
-                        pass_desa = True
+                for nama_camat in daftar_camat:
+                    if not akhir.get('camat'):
+                        akhir['camat'] = nama_camat
+                        pass_camat = True
+                    # skip camat yang sudah dicatat
+                    if pass_camat or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and nama_camat == akhir['camat']):
+                        pass_camat = True
                     else:
                         continue
+                    camat.send_keys(nama_camat + "\n")
+                    # Desa
+                    desa = WebDriverWait(driver, 10).until(
+                            expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
+                            )
                     try:
-                        # desa.send_keys("GAMPONG\n")
-                        desa.send_keys(nama_desa + "\n")
-                    except ElementNotInteractableException:
-                        sleep(5)
+                        desa.click()
+                    except:
                         desa = WebDriverWait(driver, 20).until(
-                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
-                            )
-                        desa.send_keys(nama_desa + "\n")
-                    # TPS
-                    tps = WebDriverWait(driver, 10).until(
-                            expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
-                            )
-                    try:
-                        tps.click()
-                    except ElementClickInterceptedException:
-                        sleep(5)
-                        tps = WebDriverWait(driver, 20).until(
-                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
-                            )
-                        try:
-                            tps.click()
-                        except ElementClickInterceptedException:
-                            sleep(10)
-                            tps = WebDriverWait(driver, 40).until(
-                                expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
                                 )
-                            tps.click()
+                        desa.click()
                     sleep(1)
                     i = 1
-                    daftar_tps = []
+                    daftar_desa = []
                     while True:
-                        tag = '//div[@class="form-group col-md-3"][8]/div/ul/li[' + str(i) + ']'
+                        tag = '//div[@class="form-group col-md-3"][7]/div/ul/li[' + str(i) + ']'
                         try:
                             pilihan = driver.find_element_by_xpath(tag)
-                            daftar_tps.append(pilihan.text)
+                            daftar_desa.append(pilihan.text)
                             i += 1
                         except NoSuchElementException:
                             break
-                    for nama_tps in daftar_tps:
-                        if not akhir.get('tps'):
-                            akhir['tps'] = nama_tps
-                            pass_tps = True
-                        # skip tps yang sudah dicatat
-                        if pass_tps or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and\
-                                        nama_camat == akhir['camat'] and nama_desa == akhir['desa'] and nama_tps == akhir['tps']):
-                            if not pass_tps:
-                                pass_tps = True
-                                continue
+                    for nama_desa in daftar_desa:
+                        if not akhir.get('desa'):
+                            akhir['desa'] = nama_desa
+                            pass_desa = True
+                        # skip desa yang sudah dicatat
+                        if pass_desa or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and\
+                                         nama_camat == akhir['camat'] and nama_desa == akhir['desa']):
+                            pass_desa = True
                         else:
                             continue
                         try:
-                            tps.send_keys(nama_tps + "\n")
+                            # desa.send_keys("GAMPONG\n")
+                            desa.send_keys(nama_desa + "\n")
                         except ElementNotInteractableException:
                             sleep(5)
-                            WebDriverWait(driver, 20).until(
+                            desa = WebDriverWait(driver, 20).until(
+                                expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
+                                )
+                            desa.send_keys(nama_desa + "\n")
+                        sleep(1)
+                        # TPS
+                        tps = WebDriverWait(driver, 10).until(
+                                expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                )
+                        try:
+                            tps.click()
+                        except ElementClickInterceptedException:
+                            sleep(5)
+                            tps = WebDriverWait(driver, 20).until(
                                 expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
                                 )
-                            tps.send_keys(nama_tps + "\n")
+                            try:
+                                tps.click()
+                            except ElementClickInterceptedException:
+                                sleep(10)
+                                tps = WebDriverWait(driver, 40).until(
+                                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                    )
+                                tps.click()
                         sleep(1)
-                        # Save to file
-                        row = [nama_propinsi, nama_kota, nama_camat, nama_desa, nama_tps]
-                        # skip jika: Data Belum Tersedia
-                        try:
-                            tag = driver.find_element_by_xpath("//table[1]/tr[2]/td[2]")
-                        except NoSuchElementException:
-                            sleep(5)
+                        i = 1
+                        daftar_tps = []
+                        while True:
+                            tag = '//div[@class="form-group col-md-3"][8]/div/ul/li[' + str(i) + ']'
                             try:
-                                tag = WebDriverWait(driver, 10).until(
-                                        expected_conditions.presence_of_element_located((By.XPATH, "//table[1]/tr[2]/td[2]"))
-                                        )
-                            except TimeoutException:
-                                row.extend(['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'])
-                                writer.writerow(row)
+                                pilihan = driver.find_element_by_xpath(tag)
+                                daftar_tps.append(pilihan.text)
+                                i += 1
+                            except NoSuchElementException:
+                                break
+                        for nama_tps in daftar_tps:
+                            if not akhir.get('tps'):
+                                akhir['tps'] = nama_tps
+                                pass_tps = True
+                            # skip tps yang sudah dicatat
+                            if pass_tps or (nama_propinsi == akhir['propinsi'] and nama_kota == akhir['kota'] and\
+                                            nama_camat == akhir['camat'] and nama_desa == akhir['desa'] and nama_tps == akhir['tps']):
+                                if not pass_tps:
+                                    pass_tps = True
+                                    continue
+                            else:
                                 continue
-                        # DPT
-                        for i in range(2,4):
                             try:
-                                tag = driver.find_element_by_xpath("//table[1]/tr[" + str(i) + "]/td[2]")
+                                tps.send_keys(nama_tps + "\n")
+                            except ElementNotInteractableException:
+                                sleep(5)
+                                WebDriverWait(driver, 20).until(
+                                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                    )
+                                tps.send_keys(nama_tps + "\n")
+                            sleep(1)
+                            # Save to file
+                            row = [nama_propinsi, nama_kota, nama_camat, nama_desa, nama_tps]
+                            # skip jika: Data Belum Tersedia
+                            try:
+                                tag = driver.find_element_by_xpath("//table[1]/tr[2]/td[2]")
                             except NoSuchElementException:
                                 sleep(5)
-                                tag = WebDriverWait(driver, 20).until(
-                                        expected_conditions.presence_of_element_located((By.XPATH, "//table[1]/tr[" + str(i) + "]/td[2]"))
-                                        )    
-                            row.append(tag.text)
-                        # Partai
-                        if nama_propinsi == 'ACEH':
-                            for i in range(2,22):
                                 try:
-                                    tag = driver.find_element_by_xpath("//table[2]/tr[" + str(i) + "]/td[3]")
+                                    tag = WebDriverWait(driver, 10).until(
+                                            expected_conditions.presence_of_element_located((By.XPATH, "//table[1]/tr[2]/td[2]"))
+                                            )
+                                except TimeoutException:
+                                    row.extend(['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'])
+                                    writer.writerow(row)
+                                    continue
+                            # DPT
+                            for i in range(2,4):
+                                try:
+                                    tag = driver.find_element_by_xpath("//table[1]/tr[" + str(i) + "]/td[2]")
                                 except NoSuchElementException:
                                     sleep(5)
                                     tag = WebDriverWait(driver, 20).until(
-                                            expected_conditions.presence_of_element_located((By.XPATH, "//table[2]/tr[" + str(i) + "]/td[3]"))
-                                            )
+                                            expected_conditions.presence_of_element_located((By.XPATH, "//table[1]/tr[" + str(i) + "]/td[2]"))
+                                            )    
                                 row.append(tag.text)
-                        else:
-                            for i in range(2,18):
+                            # Partai
+                            if nama_propinsi == 'ACEH':
+                                for i in range(2,22):
+                                    try:
+                                        tag = driver.find_element_by_xpath("//table[2]/tr[" + str(i) + "]/td[3]")
+                                    except NoSuchElementException:
+                                        sleep(5)
+                                        tag = WebDriverWait(driver, 20).until(
+                                                expected_conditions.presence_of_element_located((By.XPATH, "//table[2]/tr[" + str(i) + "]/td[3]"))
+                                                )
+                                    row.append(tag.text)
+                            else:
+                                for i in range(2,18):
+                                    try:
+                                        tag = driver.find_element_by_xpath("//table[2]/tr[" + str(i) + "]/td[3]")
+                                    except NoSuchElementException:
+                                        sleep(5)
+                                        tag = WebDriverWait(driver, 20).until(
+                                                expected_conditions.presence_of_element_located((By.XPATH, "//table[2]/tr[" + str(i) + "]/td[3]"))
+                                                )
+                                    if i == 16:
+                                        row.extend(['0','0','0','0'])
+                                    row.append(tag.text)
+                            # Suara sah
+                            for i in range(2,5):
                                 try:
-                                    tag = driver.find_element_by_xpath("//table[2]/tr[" + str(i) + "]/td[3]")
+                                    tag = driver.find_element_by_xpath("//table[3]/tr[" + str(i) + "]/td[3]")
                                 except NoSuchElementException:
                                     sleep(5)
-                                    tag = WebDriverWait(driver, 20).until(
-                                            expected_conditions.presence_of_element_located((By.XPATH, "//table[2]/tr[" + str(i) + "]/td[3]"))
+                                    tag = WebDriverWait(driver, 10).until(
+                                            expected_conditions.presence_of_element_located((By.XPATH, "//table[3]/tr[" + str(i) + "]/td[3]"))
                                             )
-                                if i == 16:
-                                    row.extend(['0','0','0','0'])
                                 row.append(tag.text)
-                        # Suara sah
-                        for i in range(2,5):
-                            try:
-                                tag = driver.find_element_by_xpath("//table[3]/tr[" + str(i) + "]/td[3]")
-                            except NoSuchElementException:
-                                sleep(5)
-                                tag = WebDriverWait(driver, 10).until(
-                                        expected_conditions.presence_of_element_located((By.XPATH, "//table[3]/tr[" + str(i) + "]/td[3]"))
-                                        )
-                            row.append(tag.text)
-                        writer.writerow(row)
-                        akhir = {
-                            'propinsi': nama_propinsi,
-                            'kota': nama_kota,
-                            'camat': nama_camat,
-                            'desa': nama_desa,
-                            'tps': nama_tps
-                        }
-                        with open('tps.json', 'w') as f2:
-                            json.dump(akhir, f2)
-        # close csv
+                            writer.writerow(row)
+                            # tulis buffer csv ke file
+                            f.flush()
+                            akhir = {
+                                'propinsi': nama_propinsi,
+                                'kota': nama_kota,
+                                'camat': nama_camat,
+                                'desa': nama_desa,
+                                'tps': nama_tps
+                            }
+                            with open('tps.json', 'w') as f2:
+                                json.dump(akhir, f2)
+            # close csv
+            f.close()
+        # break infinite loop
+        break
+    except Exception:
+        logging.exception('ERROR')
+    finally:
         f.close()
-except Exception:
-    logging.exception('ERROR')
-finally:
-    f.close()
-    quit()
 # close the browser
 driver.close()
