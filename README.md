@@ -51,7 +51,7 @@ Python script untuk mengambil data KPU per TPS menggunakan Selenium
 1. Unduh file dan ekstrak
 2. Jalankan xvfb, x11vnc, dan fluxbox
    ```
-   Xvfb :1 -screen 0 1024x768x16
+   nohup Xvfb :1 -screen 0 1024x768x16 &
    x11vnc -display :1 -forever -shared &
    DISPLAY=:1 fluxbox &
    ```
