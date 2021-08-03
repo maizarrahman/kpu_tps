@@ -1,11 +1,10 @@
 # kpu_tps
 Python script untuk mengambil data KPU per TPS menggunakan Selenium
 
-## Instalasi di Ubuntu Desktop, Linux Mint, dan turunan Debian lainnya
+## Instalasi
+### Di Ubuntu Desktop, Linux Mint, dan turunan Debian lainnya
 1. Install python3 dan unzip
-   ```
-   sudo apt-get install -y python3 python3-pip unzip
-   ```
+   ```sudo apt-get install -y python3 python3-pip unzip```
 2. Install selenium.
    `sudo pip3 install selenium`
 3. Install chromedriver.
@@ -15,7 +14,7 @@ Python script untuk mengambil data KPU per TPS menggunakan Selenium
    `unzip chromedriver_linux64.zip`
    `sudo cp chromedriver /usr/bin`
 
-## Instalasi di _virtual environment_ Python 3
+### Di _virtual environment_ Python 3
 1. Aktifkan virtual environment.
    `source /direktori/virtual_environment/bin/activate`
 2. Install selenium
