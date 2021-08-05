@@ -163,33 +163,68 @@ while True:
                             continue
                         try:
                             # desa.send_keys("GAMPONG\n")
+                            # print(nama_desa)
                             desa.send_keys(nama_desa + "\n")
                         except ElementNotInteractableException:
                             sleep(5)
                             desa = WebDriverWait(driver, 20).until(
-                                expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
-                                )
+                                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
+                                    )
                             desa.send_keys(nama_desa + "\n")
+
                         sleep(1)
                         # TPS
-                        tps = WebDriverWait(driver, 10).until(
-                                expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
-                                )
                         try:
+                            tps = WebDriverWait(driver, 10).until(
+                                    expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                    )
                             tps.click()
                         except ElementClickInterceptedException:
-                            sleep(5)
-                            tps = WebDriverWait(driver, 20).until(
-                                expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
-                                )
                             try:
+                                sleep(5)
+                                tps = WebDriverWait(driver, 20).until(
+                                        expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                        )
                                 tps.click()
                             except ElementClickInterceptedException:
                                 sleep(10)
                                 tps = WebDriverWait(driver, 40).until(
-                                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
-                                    )
+                                        expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                        )
                                 tps.click()
+                        except TimeoutException:
+                            nama = nama_desa.split()
+                            for kata in nama:
+                                desa.clear()
+                                desa.send_keys(kata)
+                                sleep(1)
+                                pilihan = driver.find_element_by_xpath('//div[@class="form-group col-md-3"][7]/div/ul/li[1]')
+                                if pilihan.text == nama_desa:
+                                    desa.send_keys("\n")
+                                    break
+                            else:
+                                logging.error('ERROR. Desa ' + nama_desa + ' tidak bisa dipilih. Propinsi = ' + nama_propinsi + ', Kota = ' + nama_kota + ', Camat = ' + nama_camat)
+                                continue    
+                            sleep(1)
+                            try:
+                                tps = WebDriverWait(driver, 10).until(
+                                        expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                        )
+                                tps.click()
+                            except ElementClickInterceptedException:
+                                try:
+                                    sleep(5)
+                                    tps = WebDriverWait(driver, 20).until(
+                                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                            )
+                                    tps.click()
+                                except ElementClickInterceptedException:
+                                    sleep(10)
+                                    tps = WebDriverWait(driver, 40).until(
+                                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                            )
+                                    tps.click()
+
                         sleep(1)
                         i = 1
                         daftar_tps = []
