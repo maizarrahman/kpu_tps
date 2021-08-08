@@ -1,6 +1,6 @@
 from selenium import webdriver
 from time import sleep
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException, TimeoutException, InvalidSessionIdException
 import csv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,42 +11,42 @@ import logging
 
 
 logging.basicConfig(filename='tps.log', format='%(asctime)s %(message)s')
-driver = webdriver.Chrome()
-#driver=webdriver.Firefox()
-#navigate to the url
-driver.get("https://pemilu2019.kpu.go.id/#/dprdkab/hitung-suara/")
-sleep(1)
-# WILAYAH
-wilayah = WebDriverWait(driver, 10).until(
-            expected_conditions.visibility_of_element_located((By.XPATH, '//div[@id="scope-options"]/div/div/input'))
-            )
-wilayah.send_keys("WILAYAH\n")
-# driver.find_element_by_xpath('//div[@id="scope-options"]/div/div/input').send_keys("WILAYAH\n")
-sleep(1)
+while True:
+    try:
+        driver = webdriver.Chrome()
+        #driver=webdriver.Firefox()
+        #navigate to the url
+        driver.get("https://pemilu2019.kpu.go.id/#/dprdkab/hitung-suara/")
+        sleep(1)
+        # WILAYAH
+        wilayah = WebDriverWait(driver, 10).until(
+                    expected_conditions.visibility_of_element_located((By.XPATH, '//div[@id="scope-options"]/div/div/input'))
+                    )
+        wilayah.send_keys("WILAYAH\n")
+        # driver.find_element_by_xpath('//div[@id="scope-options"]/div/div/input').send_keys("WILAYAH\n")
+        sleep(1)
 
-# Propinsi
-propinsi = WebDriverWait(driver, 10).until(
-            expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][4]/div/div/div/input'))
-            )
-# propinsi = driver.find_element_by_xpath('//div[@class="form-group col-md-3"][4]/div/div/div/input')
-propinsi.click()
-sleep(1)
-i = 1
-daftar_propinsi = []
-while True:
-    tag = '//div[@class="form-group col-md-3"][4]/div/ul/li[' + str(i) + ']'
-    try:
-        # Ini gagal!
-        # pilihan = WebDriverWait(driver, 10).until(
-        #           expected_conditions.visibility_of_element_located((By.XPATH, tag))
-        #           )
-        pilihan = driver.find_element_by_xpath(tag)
-        daftar_propinsi.append(pilihan.text)
-        i += 1
-    except NoSuchElementException:
-        break
-while True:
-    try:
+        # Propinsi
+        propinsi = WebDriverWait(driver, 10).until(
+                    expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][4]/div/div/div/input'))
+                    )
+        propinsi.click()
+        sleep(1)
+        i = 1
+        daftar_propinsi = []
+        while True:
+            tag = '//div[@class="form-group col-md-3"][4]/div/ul/li[' + str(i) + ']'
+            try:
+                # Ini gagal!
+                # pilihan = WebDriverWait(driver, 10).until(
+                #           expected_conditions.visibility_of_element_located((By.XPATH, tag))
+                #           )
+                pilihan = driver.find_element_by_xpath(tag)
+                daftar_propinsi.append(pilihan.text)
+                i += 1
+            except NoSuchElementException:
+                break
+
         pass_propinsi = False
         pass_kota = False
         pass_camat = False
@@ -64,13 +64,15 @@ while True:
             else:
                 continue
             # create csv
-            nama_file = nama_propinsi.replace(' ', '_') + '_' + datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + '.csv'
+            nama_file = nama_propinsi.replace(' ', '_') + datetime.now().strftime("_%Y_%m_%d_%H_%M_%S") + '.csv'
             f = open(nama_file, 'w')
             writer = csv.writer(f)
             row = ['PROPINSI', 'KOTA', 'CAMAT', 'DESA', 'TPS', 'DPT', 'PENGGUNA', 'PKB', 'Gerindra','PDIP','Golkar','NasDem','Garuda','Berkarya','PKS','Perindo','PPP','PSI','PAN','Hanura','Demokrat','PA','SIRA','PD Aceh','PNA','PBB','PKPI', 'SAH', 'TAK SAH', 'JUMLAH']
             writer.writerow(row)
 
             propinsi.send_keys(nama_propinsi + "\n")
+            sleep(1)
+
             # Kota
             kota = WebDriverWait(driver, 10).until(
                     expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
@@ -255,7 +257,14 @@ while True:
                                 WebDriverWait(driver, 20).until(
                                     expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
                                     )
-                                tps.send_keys(nama_tps + "\n")
+                                try:
+                                    tps.send_keys(nama_tps + "\n")
+                                except ElementNotInteractableException:
+                                    sleep(10)
+                                    WebDriverWait(driver, 40).until(
+                                        expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][8]/div/div/div/input'))
+                                        )
+                                    tps.send_keys(nama_tps + "\n")
                             sleep(1)
                             # Save to file
                             row = [nama_propinsi, nama_kota, nama_camat, nama_desa, nama_tps]
@@ -334,6 +343,9 @@ while True:
     except Exception:
         logging.exception('ERROR')
     finally:
-        f.close()
-# close the browser
-driver.close()
+        try:
+            f.close()
+        except NameError:
+            pass
+        # close the browser
+        driver.close()
