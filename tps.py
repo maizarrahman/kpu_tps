@@ -280,6 +280,16 @@ while True:
                                 except TimeoutException:
                                     row.extend(['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'])
                                     writer.writerow(row)
+                                    f.flush()
+                                    akhir = {
+                                        'propinsi': nama_propinsi,
+                                        'kota': nama_kota,
+                                        'camat': nama_camat,
+                                        'desa': nama_desa,
+                                        'tps': nama_tps
+                                    }
+                                    with open('tps.json', 'w') as f2:
+                                        json.dump(akhir, f2)
                                     continue
                             # DPT
                             for i in range(2,4):
@@ -338,6 +348,8 @@ while True:
                                 json.dump(akhir, f2)
             # close csv
             f.close()
+        logging.info('FINISH')
+        driver.close()
         # break infinite loop
         break
     except Exception:
@@ -349,3 +361,4 @@ while True:
             pass
         # close the browser
         driver.close()
+logging.info('CLOSE')
