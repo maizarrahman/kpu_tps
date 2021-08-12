@@ -30,7 +30,14 @@ while True:
         propinsi = WebDriverWait(driver, 10).until(
                     expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][4]/div/div/div/input'))
                     )
-        propinsi.click()
+        try:
+            propinsi.click()
+        except ElementClickInterceptedException:
+            sleep(5)
+            propinsi = WebDriverWait(driver, 20).until(
+                    expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][4]/div/div/div/input'))
+                    )
+            propinsi.click()
         sleep(1)
         i = 1
         daftar_propinsi = []
@@ -80,6 +87,7 @@ while True:
             try:
                 kota.click()
             except ElementClickInterceptedException:
+                sleep(5)
                 kota = WebDriverWait(driver, 10).until(
                         expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][5]/div/div/div/input'))
                         )
@@ -109,7 +117,14 @@ while True:
                 camat = WebDriverWait(driver, 10).until(
                         expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][6]/div/div/div/input'))
                         )
-                camat.click()
+                try:
+                    camat.click()
+                except ElementClickInterceptedException:
+                    sleep(5)
+                    camat = WebDriverWait(driver, 20).until(
+                            expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][6]/div/div/div/input'))
+                            )
+                    camat.click()
                 sleep(1)
                 i = 1
                 daftar_camat = []
@@ -137,7 +152,8 @@ while True:
                             )
                     try:
                         desa.click()
-                    except:
+                    except ElementClickInterceptedException:
+                        sleep(5)
                         desa = WebDriverWait(driver, 20).until(
                                 expected_conditions.element_to_be_clickable((By.XPATH, '//div[@class="form-group col-md-3"][7]/div/div/div/input'))
                                 )
@@ -349,7 +365,7 @@ while True:
             # close csv
             f.close()
         logging.info('FINISH')
-        driver.close()
+        driver.quit()
         # break infinite loop
         break
     except Exception:
@@ -360,5 +376,5 @@ while True:
         except NameError:
             pass
         # close the browser
-        driver.close()
+        driver.quit()
 logging.info('CLOSE')
