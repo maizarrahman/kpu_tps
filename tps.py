@@ -53,7 +53,7 @@ while True:
                 i += 1
             except NoSuchElementException:
                 break
-
+        # print(daftar_propinsi)
         pass_propinsi = False
         pass_kota = False
         pass_camat = False
@@ -365,7 +365,7 @@ while True:
             # close csv
             f.close()
         logging.info('FINISH')
-        driver.quit()
+        driver.close()
         # break infinite loop
         break
     except Exception:
@@ -373,8 +373,11 @@ while True:
     finally:
         try:
             f.close()
-        except NameError:
-            pass
+        except Exception:
+            logging.exception('ERROR')
         # close the browser
-        driver.quit()
+        try:
+            driver.close()
+        except Exception:
+            logging.exception('ERROR')
 logging.info('CLOSE')
