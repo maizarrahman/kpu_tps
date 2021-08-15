@@ -99,19 +99,18 @@ if len(sys.argv) > 2:
                 if not akhir.get('kota'):
                     akhir['kota'] = nama_kota
                 kota.send_keys(nama_kota + "\n")
-                sleep(1)
                 kota_terpilih = driver.find_element_by_xpath('//div[@class="form-group col-md-3"][5]/div/div/div/span[@class="selected-tag"]')
                 if kota_terpilih.text != nama_kota:
+                    kota.clear
                     kota.send_keys(nama_kota)
-                    sleep(1)
                     i = 2
                     while kota_terpilih.text != nama_kota:
                         tag = '//div[@class="form-group col-md-3"][5]/div/ul/li[' + str(i) + ']'
                         try:
-                            pilihan = driver.find_element_by_xpath(tag)
-                            if pilihan.text == nama_kota:
-                                pilihan.location_once_scrolled_into_view
-                                pilihan.click()
+                            kota_terpilih = driver.find_element_by_xpath(tag)
+                            if kota_terpilih.text == nama_kota:
+                                kota_terpilih.location_once_scrolled_into_view
+                                kota_terpilih.click()
                                 break
                             i += 1
                         except NoSuchElementException:
@@ -225,8 +224,27 @@ if len(sys.argv) > 2:
                                     desa.send_keys("\n")
                                     break
                             else:
-                                logging.error('ERROR. Desa ' + nama_desa + ' tidak bisa dipilih. Propinsi = ' + nama_propinsi + ', Kota = ' + nama_kota + ', Camat = ' + nama_camat)
-                                continue    
+                                desa.clear()
+                                desa.send_keys(kata)
+                                sleep(1)
+                                i = 1
+                                ketemu = False
+                                while not ketemu:
+                                    tag = '//div[@class="form-group col-md-3"][7]/div/ul/li[' + str(i) + ']'
+                                    try:
+                                        desa_terpilih = driver.find_element_by_xpath(tag)
+                                        if desa_terpilih.text == nama_desa:
+                                            desa_terpilih.location_once_scrolled_into_view
+                                            desa_terpilih.click()
+                                            ketemu = True
+                                            break
+                                        i += 1
+                                    except NoSuchElementException:
+                                        logging.error('ERROR. Desa ' + nama_desa + ' tidak bisa dipilih. Propinsi = ' + nama_propinsi + ', Kota = ' + nama_kota + ', Camat = ' + nama_camat)
+                                        break
+                            if not ketemu:
+                                continue  # skip desa ini
+                                    
                             sleep(1)
                             try:
                                 tps = WebDriverWait(driver, 10).until(
