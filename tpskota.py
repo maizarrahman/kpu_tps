@@ -242,8 +242,8 @@ if len(sys.argv) > 2:
                                     except NoSuchElementException:
                                         logging.error('ERROR. Desa ' + nama_desa + ' tidak bisa dipilih. Propinsi = ' + nama_propinsi + ', Kota = ' + nama_kota + ', Camat = ' + nama_camat)
                                         break
-                            if not ketemu:
-                                continue  # skip desa ini
+                                if not ketemu:
+                                    continue  # skip desa ini
                                     
                             sleep(1)
                             try:

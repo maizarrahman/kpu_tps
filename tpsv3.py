@@ -1,40 +1,110 @@
 from selenium import webdriver
 from time import sleep
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException, TimeoutException, InvalidSessionIdException
-import csv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from datetime import datetime
-import json
-import logging
-import sys
+import csv, json, logging, sys, getopt
 
 
-# Ini untuk dijalankan paralel per propinsi
-# Parameternya adalah nama propinsi di website KPU, yaitu:
-# 'ACEH', 'SUMATERA UTARA', 'SUMATERA BARAT', 'RIAU', 'JAMBI', 
-# 'SUMATERA SELATAN', 'BENGKULU', 'LAMPUNG', 'KEPULAUAN BANGKA BELITUNG', 
-# 'KEPULAUAN RIAU', 'DKI JAKARTA', 'JAWA BARAT', 'JAWA TENGAH', 
-# 'DAERAH ISTIMEWA YOGYAKARTA', 'JAWA TIMUR', 'BANTEN', 'BALI', 
-# 'NUSA TENGGARA BARAT', 'NUSA TENGGARA TIMUR', 'KALIMANTAN BARAT', 
-# 'KALIMANTAN TENGAH', 'KALIMANTAN SELATAN', 'KALIMANTAN TIMUR', 
-# 'SULAWESI UTARA', 'SULAWESI TENGAH', 'SULAWESI SELATAN', 'SULAWESI TENGGARA', 
-# 'GORONTALO', 'SULAWESI BARAT', 'MALUKU', 'MALUKU UTARA', 'PAPUA', 
-# 'PAPUA BARAT', 'KALIMANTAN UTARA', 'Luar Negeri'
+cara = """Scraping web KPU 2019 untuk dijalankan paralel per propinsi atau per kota.
+Cara penggunaan:
+ 
+    python3 tpsv3.py [opsi]
+ 
+    opsi:
+        -j  diisi jenis pemilu, yaitu:
+            pres   untuk pemilu presiden
+            dpr    untuk pemilu legislatif DPR
+            dprd1  untuk pemilu legislatif DPRD1
+            dprd2  untuk pemilu legislatif DPRD2
+            dpd    untuk pemilu DPD
+ 
+        -p  diisi nama propinsi, yaitu:
+            ACEH
+            SUMATERA UTARA
+            SUMATERA BARAT
+            SUMATERA SELATAN
+            RIAU
+            JAMBI
+            BENGKULU
+            LAMPUNG
+            KEPULAUAN BANGKA BELITUNG
+            KEPULAUAN RIAU
+            DKI JAKARTA
+            JAWA BARAT
+            JAWA TENGAH
+            DAERAH ISTIMEWA YOGYAKARTA
+            JAWA TIMUR
+            BANTEN
+            BALI
+            NUSA TENGGARA BARAT
+            NUSA TENGGARA TIMUR
+            KALIMANTAN BARAT
+            KALIMANTAN TENGAH
+            KALIMANTAN SELATAN
+            KALIMANTAN TIMUR
+            KALIMANTAN UTARA
+            GORONTALO
+            SULAWESI UTARA
+            SULAWESI TENGAH
+            SULAWESI SELATAN
+            SULAWESI TENGGARA
+            SULAWESI BARAT
+            MALUKU
+            MALUKU UTARA
+            PAPUA
+            PAPUA BARAT
+ 
+        -k  diisi nama kota, boleh kosong
+"""
+if len(sys.argv) > 0:
+    nama_propinsi = False
+    nama_kota_input = False
+    pemilu = False
+    opts, argv = getopt.getopt(sys.argv[1:], 'j:p:k:')
+    for opt, arg in opts:
+        if opt in ['-j']:
+            arg_pemilu = arg
+            if arg == 'pres':
+                pemilu = "PILPRES"
+            elif arg == 'dpr':
+                pemilu = "PILEG DPR"
+            elif arg == 'dprd1':
+                pemilu = "PILEG DPRD PROVINSI"
+            elif arg == 'dprd2':
+                pemilu = "PILEG DPRD KAB/KOTA"
+            elif arg == 'dpd':
+                pemilu = "PEMILU DPD"
+        elif opt in ['-p']:
+            nama_propinsi = arg
+        elif opt in ['-k']:
+            nama_kota_input = arg
+    if not pemilu or not nama_propinsi:
+        print(cara)
+        quit()
 
-if len(sys.argv) > 1:
-    nama_propinsi = sys.argv[1]
-    file1 = nama_propinsi.lower().replace(' ', '_')
+    if nama_kota_input:
+        file1 = arg_pemilu + '_' + nama_kota_input.lower().replace(' ', '_') + '_' + nama_propinsi.lower().replace(' ', '_')
+    else:
+        file1 = arg_pemilu + '_' + nama_propinsi.lower().replace(' ', '_')
     log1 = file1 + '.log'
     logging.basicConfig(filename=log1, format='%(asctime)s %(message)s')
     json1 = file1 + '.json'
+
     while True:
         try:
             driver = webdriver.Chrome()
-            #driver=webdriver.Firefox()
+            #driver = webdriver.Firefox()
             #navigate to the url
             driver.get("https://pemilu2019.kpu.go.id/#/dprdkab/hitung-suara/")
+            sleep(1)
+            # Jenis pemilu: presiden, dpr, dprd1, dprd2, dpd?
+            jenis = WebDriverWait(driver, 10).until(
+                        expected_conditions.visibility_of_element_located((By.XPATH, '//div[@id="institution-options"]/div/div/input'))
+                        )
+            jenis.send_keys(pemilu + "\n")
             sleep(1)
             # WILAYAH
             wilayah = WebDriverWait(driver, 10).until(
@@ -71,13 +141,16 @@ if len(sys.argv) > 1:
                 akhir['propinsi'] = nama_propinsi
             
             # create csv
-            nama_file = nama_propinsi.upper().replace(' ', '_') + datetime.now().strftime("_%Y_%m_%d_%H_%M_%S") + '.csv'
+            if nama_kota_input:
+                nama_file = arg_pemilu + '_' + nama_kota_input.upper().replace(' ', '_') + '_' + nama_propinsi.upper().replace(' ', '_') + datetime.now().strftime("_%Y_%m_%d_%H_%M_%S") + '.csv'
+            else:
+                nama_file = arg_pemilu + '_' + nama_propinsi.upper().replace(' ', '_') + datetime.now().strftime("_%Y_%m_%d_%H_%M_%S") + '.csv'
             f = open(nama_file, 'w')
             writer = csv.writer(f)
             row = ['PROPINSI', 'KOTA', 'CAMAT', 'DESA', 'TPS', 'DPT', 'PENGGUNA', 'PKB', 'Gerindra','PDIP','Golkar','NasDem','Garuda','Berkarya','PKS','Perindo','PPP','PSI','PAN','Hanura','Demokrat','PA','SIRA','PD Aceh','PNA','PBB','PKPI', 'SAH', 'TAK SAH', 'JUMLAH']
             writer.writerow(row)
 
-            propinsi.send_keys(nama_propinsi + "\n")
+            propinsi.send_keys(nama_propinsi.upper() + "\n")
             sleep(1)
 
             # Kota
@@ -93,20 +166,23 @@ if len(sys.argv) > 1:
                         )
                 kota.click()
             sleep(1)
-            i = 1
-            daftar_kota = []
-            while True:
-                tag = '//div[@class="form-group col-md-3"][5]/div/ul/li[' + str(i) + ']'
-                try:
-                    # Ini gagal!
-                    # pilihan = WebDriverWait(driver, 10).until(
-                    #           expected_conditions.visibility_of_element_located((By.XPATH, tag))
-                    #           )
-                    pilihan = driver.find_element_by_xpath(tag)
-                    daftar_kota.append(pilihan.text)
-                    i += 1
-                except NoSuchElementException:
-                    break
+            if nama_kota_input:
+                daftar_kota = [nama_kota_input.upper()]
+            else:
+                i = 1
+                daftar_kota = []
+                while True:
+                    tag = '//div[@class="form-group col-md-3"][5]/div/ul/li[' + str(i) + ']'
+                    try:
+                        # Ini gagal!
+                        # pilihan = WebDriverWait(driver, 10).until(
+                        #           expected_conditions.visibility_of_element_located((By.XPATH, tag))
+                        #           )
+                        pilihan = driver.find_element_by_xpath(tag)
+                        daftar_kota.append(pilihan.text)
+                        i += 1
+                    except NoSuchElementException:
+                        break
             for nama_kota in daftar_kota:
                 if not akhir.get('kota'):
                     akhir['kota'] = nama_kota
@@ -406,7 +482,10 @@ if len(sys.argv) > 1:
                             with open(json1, 'w') as f2:
                                 json.dump(akhir, f2)
             # close csv
-            f.close()
+            try:
+                f.close()
+            except Exception:
+                logging.exception('ERROR')
             logging.info('FINISH')
             driver.close()
             quit()

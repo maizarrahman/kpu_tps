@@ -260,8 +260,8 @@ while True:
                                     except NoSuchElementException:
                                         logging.error('ERROR. Desa ' + nama_desa + ' tidak bisa dipilih. Propinsi = ' + nama_propinsi + ', Kota = ' + nama_kota + ', Camat = ' + nama_camat)
                                         break
-                            if not ketemu:
-                                continue  # skip desa ini    
+                                if not ketemu:
+                                    continue  # skip desa ini    
                             sleep(1)
                             try:
                                 tps = WebDriverWait(driver, 10).until(
