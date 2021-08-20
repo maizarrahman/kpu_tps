@@ -83,7 +83,7 @@ if len(sys.argv) > 0:
             nama_kota_input = arg
     if not pemilu or not nama_propinsi:
         print(cara)
-        quit()
+        sys.exit(0)
 
     if nama_kota_input:
         file1 = arg_pemilu + '_' + nama_kota_input.lower().replace(' ', '_') + '_' + nama_propinsi.lower().replace(' ', '_')
@@ -488,7 +488,7 @@ if len(sys.argv) > 0:
                 logging.exception('ERROR')
             logging.info('FINISH')
             driver.close()
-            quit()
+            sys.exit(0)
         except Exception:
             logging.exception('ERROR')
         finally:

@@ -405,7 +405,7 @@ while True:
             f.close()
         logging.info('FINISH')
         driver.close()
-        quit()
+        sys.exit(0)
     except Exception:
         logging.exception('ERROR')
     finally:

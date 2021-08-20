@@ -115,7 +115,7 @@ if len(sys.argv) > 2:
                             i += 1
                         except NoSuchElementException:
                             logging.error('ERROR! Kota ' + nama_kota + ' tak ditemukan. Propinsi = ' + nama_propinsi)
-                            quit()
+                            sys.exit(0)
                 # Kecamatan
                 camat = WebDriverWait(driver, 10).until(
                         expected_conditions.visibility_of_element_located((By.XPATH, '//div[@class="form-group col-md-3"][6]/div/div/div/input'))
@@ -388,7 +388,7 @@ if len(sys.argv) > 2:
             f.close()
             logging.info('FINISH')
             driver.close()
-            quit()
+            sys.exit(0)
         except Exception:
             logging.exception('ERROR')
         finally:
